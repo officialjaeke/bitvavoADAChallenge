@@ -24,7 +24,7 @@ def checkorderstatus(orderId):
     price = order_status['fills'][0]['price']
     amount = order_status['fills'][0]['amount']
     fee = round(float(order_status['fills'][0]['fee']), 3)
-    return price, amount, fee
+    return amount, price, fee
 
 
 def buyada(amount_eur=5):
@@ -35,8 +35,8 @@ def buyada(amount_eur=5):
         else:
             order_status = checkorderstatus(order['orderId'])
             print("Successfully bought:")
-            print(order_status[1] + ' ADA')
-            print(order_status[0] + ' EUR per ADA')
+            print(order_status[0] + ' ADA')
+            print(order_status[1] + ' EUR per ADA')
             print(str(order_status[2]) + ' EUR in fees')
     else:
         print("Not enough balance, please top up your account")
