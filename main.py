@@ -1,32 +1,45 @@
 from python_bitvavo_api.bitvavo import Bitvavo
 import time
 
-#build api up
+# build api up
 bitvavo = Bitvavo({
-  'APIKEY': '<apikey>',
-  'APISECRET': '<secret>',
-  'RESTURL': 'https://api.bitvavo.com/v2',
-  'WSURL': 'wss://ws.bitvavo.com/v2/',
-  'ACCESSWINDOW': 10000,
-  'DEBUGGING': False
+    'APIKEY': '<apikey>',
+    'APISECRET': '<secret>',
+    'RESTURL': 'https://api.bitvavo.com/v2',
+    'WSURL': 'wss://ws.bitvavo.com/v2/',
+    'ACCESSWINDOW': 10000,
+    'DEBUGGING': False
 })
 
-def checkBalance():
+
+def checkbalance():
     balance = bitvavo.balance({})
+    #todo if statement to check if api is active.
     for currency in balance:
         if currency['symbol'] == 'EUR':
-            return currency['available']
+            return float(currency['available'])
 
-def buyADA(amount_eur = 5):
-    if checkBalance() > amount_eur:
+def checkorderstatus(orderId):
+    order_status = bitvavo.getOrder('ADA-EUR', orderId)
+    price = order_status['fills'][0]['price']
+    amount = order_status['fills'][0]['amount']
+    fee = round(float(order_status['fills'][0]['fee']), 3)
+    return price, amount, fee
+
+
+def buyada(amount_eur=5):
+    if checkbalance() > amount_eur:
         order = bitvavo.placeOrder('ADA-EUR', 'buy', 'market', {'amountQuote': amount_eur})
-        time.sleep(5)
-        order_status = bitvavo.getOrder('ADA-EUR', order['orderId'])
-        if order_status['status'] == 'filled':
-            print(order_status['amount'] + 'ADA bought at' + order_status['price'])
+        if order['status'] != 'filled':
+            print('Error! - ' + order['error'])
         else:
-            print(order_status)
+            order_status = checkorderstatus(order['orderId'])
+            print("Successfully bought:")
+            print(order_status[1] + ' ADA')
+            print(order_status[0] + ' EUR per ADA')
+            print(str(order_status[2]) + ' EUR in fees')
     else:
-        print("not enough balance, please top up your account")
+        print("Not enough balance, please top up your account")
 
-buyADA(5)
+
+buyada()
