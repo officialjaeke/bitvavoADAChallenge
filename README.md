@@ -6,8 +6,9 @@ bitvavo only accepts orders of 5 eur or more, make sure you are willing to spend
 
 ### to-do
 * ~build api~
-* ~buyADA function~
-* ~checkBalance function~
+* ~buyada function~
+* ~checkbalance function~
+* ~checkorderstatus function~
 * logging/debugging
 * write guide
 * build docker container to run every day
